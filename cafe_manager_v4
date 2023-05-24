@@ -1,0 +1,493 @@
+#cafe_manager_v4.py
+#version 4: GUI based cafe manager
+#this program is a cafe manager for user's to make accounts, take orders and display an invoice
+#r.tanner 9/05/2023
+
+from tkinter import* #importing tkinter to create the GUI
+from tkinter.ttk import Combobox #importing the combobox, a specific widget used in this program
+from tkinter import messagebox #importing the messagebox, a specific widget used in this program
+
+root = Tk()
+root.geometry("500x500") 
+root.title("Cafe Manager")
+root.configure(bg = "light blue")
+
+#creating a dictionary to store the user's cafe manager passwords and accounts
+accounts_dict = {"rosetta": "tanner", "r" : "t"} 
+
+#creating a nested dictionary in order to store the cafe's menu items
+#for every dictionary in the nested dictionary, there is a category name
+#then inside the dictionary the key is the item name, and the value is the price of the item. 
+menu_dict = {
+"Lunch items" :
+{
+"Instant Noodles" : 4.00,
+"Sausage Roll" : 4.50, 
+"Mince Pie" : 3.50,
+"Sushi" : 5.00, 
+"Loaded Fries": 6.00, 
+"Chicken Sandwich" : 4.00, 
+"BBQ Pork Bun" : 3.00,
+}, 
+"Snack items" :
+{
+"Cookie" : 2.50, 
+"Apple" : 2.00,
+"Chips" : 2.50, 
+"Brownie" : 2.00, 
+"Banana" : 2.00, 
+}, 
+"Drink items" : 
+{
+"Water" : 2.50, 
+"Coke" : 3.00, 
+"Sprite" : 3.00, 
+"Orange Juice" : 3, 
+"Berry Smoothie" : 5.
+}
+}
+
+#the items the user selects for their order
+users_order = {}
+
+#a list to store the price of the items the user orders
+ordered_item_price = []
+
+MIN_USER_AGE = 13
+MAX_USER_AGE = 18
+
+def start_screen():
+    global frame0
+    frame0 = Frame(root, bg = "light blue")
+    frame0.pack()
+
+    cafe_label = Label(frame0, text = "Cafe Manager", font = ("Arial Bold", 20), bg = "light blue", justify = "center")
+    cafe_label.grid(row = 0, column = 1, padx = 10, pady = 20)
+
+    log_in_label = Button(frame0, text = "Log in", width = 20, height = 2, font = ("Arial", 15), bg = "light green", command = log_in)
+    log_in_label.grid(row = 1, column = 1, padx = 10, pady = 5)
+
+    create_account_label = Button(frame0, text = "Create new account", width = 20, height = 2, font = ("Arial", 15), bg = "light green", command = ask_age)
+    create_account_label.grid(row = 2, column = 1, padx = 10, pady = 5)
+
+    exit_label = Button(frame0, text = "EXIT", width = 20, height = 2, font = ("Arial", 15), bg = "red", command = exit)
+    exit_label.grid(row = 3, column = 1, padx = 10, pady = 5)
+
+#creating frame 2, where user's can log in to the password manager
+def log_in():
+    global log_in_frame #making it global so I can access it from other functions
+    frame0.pack_forget()
+    log_in_frame = Frame(root, bg = "light blue")
+    log_in_frame.grid()
+
+    username_title = Label(log_in_frame, text = "Enter your username: ", font = ("Arial Bold", 15), bg = "light blue")
+    username_title.grid(row = 1, column = 0, pady = 20, padx = 20)
+
+    global username
+    username = Entry(log_in_frame)
+    username.grid(row = 1, column = 1, pady = 10)
+
+    password_title = Label(log_in_frame, text = "Enter your password: ", font = ("Arial Bold", 15), bg = "light blue")
+    password_title.grid(row = 2, column = 0, pady = 20, padx = 20)
+
+    global password
+    password = Entry(log_in_frame, show = "*") #using this show feature so user's can not see the password they enter in order to make it more secure
+    password.grid(row = 2, column = 1, pady = 10)
+
+    submit_user_btn = Button(log_in_frame, text = "Submit", bg = "light green", command = check_account)
+    submit_user_btn.grid(row = 3, column = 1, pady = 10, padx = 10)
+
+#function to check the details the user has entered
+def check_account():
+    get_username = username.get() #retrieving the user's username input
+    if get_username in accounts_dict: #if the username the user entered is in the dictionary...
+        index = list(accounts_dict).index(get_username) #find the index of the user's inputted username 
+        value1 = list(accounts_dict.values())[index] #find the value of that index^
+
+        get_password = password.get() #retrieving the password the user has entered
+        if value1 == get_password: 
+            log_in_frame.grid_remove() #remove frame 1
+            place_order()#go to the menu function
+        
+        else:
+            messagebox.showinfo("Error", "Incorrect details, please try again. ")
+    else:
+        #if the user entered incorrect details
+        messagebox.showinfo("Error", "Incorrect details, please try again. ")
+
+#this function is used to ask the user their age
+def ask_age():
+    global check_age_frame
+    frame0.pack_forget()
+    check_age_frame = Frame(root, bg = "light blue")
+    check_age_frame.grid()
+
+    age_label = Label(check_age_frame, text = "Enter your age: ", font = ("Arial Bold", 15), bg = "light blue")
+    age_label.grid(row = 0, column = 0, padx = 20, pady = 20)
+
+    global age_entry
+    age_entry = Spinbox(check_age_frame, from_= 0, to = 120, state = "readonly")
+    age_entry.grid(row = 1, column = 0, padx = 20, pady = 20)
+
+    submit_button = Button(check_age_frame, text = "Submit", bg = "light green", command = check_age)
+    submit_button.grid(row = 1, column = 1, padx = 20, pady = 20)
+
+#this function retrieves the age of the user and checks whether they are in the eligible age range to use this program
+def check_age():
+    get_age = age_entry.get()
+    if int(get_age) >= MIN_USER_AGE and int(get_age) <= MAX_USER_AGE: #if the user enter's an age that is valid. 
+        create_account()
+
+    else: #if the user enters an invalid age, they cannot use the program. 
+        messagebox.showinfo("Error", f"You are not in the eligble age range for this program.\nUsers must be between {MIN_USER_AGE} and {MAX_USER_AGE}.")
+        quit()
+
+#creating frame 2, to allow user's to create a new account
+def create_account():
+    global create_account_frame
+    check_age_frame.grid_forget() #this will hide frame 1
+    create_account_frame = Frame(root, bg = "light blue")
+    create_account_frame.grid()
+    
+    account_label = Label(create_account_frame, text = "Enter your new username: ", font = ("Arial Bold", 15), bg = "light blue")
+    account_label.grid(row = 0, column = 0, pady = 20, padx = 20)
+
+    account = Entry(create_account_frame)
+    account.grid(row = 0, column = 1, pady = 10)
+
+    password_label = Label(create_account_frame, text = "Enter your new password: ", font = ("Arial Bold", 15), bg = "light blue")
+    password_label.grid(row = 1, column = 0, pady = 10, padx = 20)
+
+    password = Entry(create_account_frame)
+    password.grid(row = 1, column = 1, pady = 10)
+
+    password_restrictions = Label(create_account_frame, text = "Passwords must be at least 5 characters.", font =("Arial", 10), bg = "light blue")
+    password_restrictions.grid(row = 2, column = 0, padx = 20)
+
+    #creating a button to submit the user's input
+    global enter_button
+    enter_button = Button(create_account_frame, text = "submit", bg = "light green", command = lambda:add_new_account(account.get(),password.get()))
+    enter_button.grid(row = 3, column = 1, pady = 10, padx = 10)
+
+#this function adds the users account and password to the accounts dictionary
+def add_new_account(account, password):
+    if len(password) < 4:
+        messagebox.showinfo("Error", "Password is too short! Please try again!")
+    
+    else:
+        accounts_dict[account] = password
+        enter_button.destroy()
+        messagebox.showinfo("Success!", "New account added.")
+
+        next_button1 = Button(create_account_frame, text = "next", command = back_start)
+        next_button1.grid(row = 4, column = 1, pady = 10, padx = 10)
+
+def back_start():
+    create_account_frame.grid_remove() #remove frame 2
+    start_screen() #goes back to the start screen, to make the user log in once they have created their account
+
+#creating a menu function to ask user's what they would like to do in the password manager
+def place_order():   
+    global place_order_frame
+    place_order_frame = Frame(root, bg = "light blue")
+    place_order_frame.grid()
+    
+    option_message1 = Label(place_order_frame, text = "Welcome to the Cafe Manager!", font = ("Arial Bold", 15), bg = "light blue")
+    option_message1.grid(row = 1, column = 0, padx = 10, pady = 10)
+
+    option_message2 = Label(place_order_frame, text = "Please choose an option: ", font = ("Arial Bold", 15), bg = "light blue")
+    option_message2.grid(row = 2, column = 0, pady = 10)
+
+    #creating a combobox so user's can select their option from the drop down
+    global pw_combo
+    pw_combo = Combobox(place_order_frame, state = "readonly")
+    pw_combo["values"] = ("1. Place an order", "2. Exit")
+    pw_combo.grid(row = 2, column = 1)
+
+    #submitting the option the user has selected
+    submit_option_btn = Button(place_order_frame, text = "Submit", bg = "light green", command = check_order)
+    submit_option_btn.grid(row = 3, column = 1, pady = 10, padx = 10)
+
+#running the options
+def check_order():
+    check_option = pw_combo.get() #retrieving the value the user entered in the combobox
+    if check_option == "1. Place an order":
+        menu() #run add account function
+    
+    elif check_option == "2. Exit":     
+        root.destroy() #destroy the root and exit the program
+
+#this is the main menu function which displays the categories the user can choose from, as well as the checkout
+def menu():
+    place_order_frame.grid_remove()
+    global menu_frame
+    menu_frame = Frame(root, bg = "light blue")
+    menu_frame.pack()
+
+    cafe_label = Label(menu_frame, text = "Cafe Menu", font = ("Arial Bold", 25), justify = "center", bg = "light blue")
+    cafe_label.grid(row = 0, column = 1, padx = 10, pady = 20)
+
+    lunch_label = Button(menu_frame, text = "Lunches", width = 15, height = 2, font = ("Arial", 11), bg = "light green", command = lunch_menu)
+    lunch_label.grid(row = 1, column = 1, padx = 10, pady = 5)
+
+    snack_label = Button(menu_frame, text = "Snacks", width = 15, height = 2, font = ("Arial", 11), bg = "light green", command = snack_menu)
+    snack_label.grid(row = 2, column = 1, padx = 10, pady = 5)
+
+    drinks_label = Button(menu_frame, text = "Drinks", width = 15, height = 2,font = ("Arial", 11), bg = "light green", command = drinks_menu)
+    drinks_label.grid(row = 3, column = 1, padx = 10, pady = 5)
+
+    exit_button = Button(menu_frame, text = "EXIT", width = 15, height = 2, font = ("Arial Bold", 11), bg = "red", command = exit)
+    exit_button.grid(row = 5, column = 1, pady = 30, columnspan = 2)
+
+    checkout_button = Button(menu_frame, text = "Checkout", width = 15, height = 2, font = ("Arial", 11), bg = "light green" , command = checkout)
+    checkout_button.grid(row = 4, column = 1, padx = 10, pady = 5)
+
+#the lunch menu function to display all of the lunch items
+def lunch_menu():
+    x = 2
+    menu_frame.pack_forget()
+    global lunch_frame
+    lunch_frame = Frame(root, bg = "light blue")
+    lunch_frame.grid()
+    
+    back_button = Button(lunch_frame, text = "back", command = lunch_back)
+    back_button.grid(row = 0, column = 0, pady = 10, padx = 10)
+
+    lunch_label = Label(lunch_frame, text = "Lunch Items", font = ("Arial Bold", 20), bg = "light blue")
+    lunch_label.grid(row = 0, column = 1)
+
+    #gets the index value of the lunch category from the menu
+    items = list(menu_dict.values())[0] #finds the dictionary of lunch items from the lunch categories index number
+    item_name = Label(lunch_frame, text = "Item", font = ("Arial Bold", 10), bg = "light blue")
+    item_name.grid(row = 1, column = 0, padx = 10, pady = 10)
+
+    price_name = Label(lunch_frame, text = "Price", font = ("Arial Bold", 10), bg = "light blue")
+    price_name.grid(row = 1, column = 1, padx = 10, pady = 10)
+    
+    quantity_name = Label(lunch_frame, text = "Quantity", font = ("Arial Bold", 10), bg = "light blue")
+    quantity_name.grid(row = 1, column = 2, padx = 10, pady = 10)
+    
+    for object, price in items.items(): #prints the lunch items and prices from the lunch item dictionary
+        item_label = Label(lunch_frame, text = object, font = ("Arial Bold", 10), bg = "light blue")
+        item_label.grid(row = x, column = 0, padx = 10, pady = 10)
+
+        price_label = Label(lunch_frame, text = f"${price}", font = ("Arial Bold", 10), bg = "light blue")
+        price_label.grid(row = x, column = 1, padx = 10, pady = 10)
+
+        global quantity_box
+        quantity_box = Spinbox(lunch_frame, from_ = 0, to = 10, width = 5, state = "readonly")
+        quantity_box.grid(row = x, column = 2, padx = 10, pady = 10)
+        x += 1
+
+    submit_button = Button(lunch_frame, text = "submit", bg = "light green", command = order_lunch)
+    submit_button.grid(row = x, column = 0)
+
+#this function contains a messagebox which displays that the item has been added to the order
+def ordered_messagebox():
+    messagebox.showinfo("Success!", "Item added to order!")
+        
+#this function retrieves the quantity of items that the user orders from the lunch category
+def order_lunch():
+    lunch_items = list(menu_dict["Lunch items"].keys())
+    x = 0
+
+    for i in range(len(lunch_items)):
+        quantity = int(lunch_frame.grid_slaves(row = 2 + x, column = 2)[0].get()) #for all of the widgets in the lunch frame, specifically those in column 2, retrieve the value
+        if quantity > 0: #if the quantity of the item is greater than 0...
+            item = lunch_items[i] #get the lunch item value
+            users_order[item] = quantity #add the users item and quantity to the users order dictionary
+            price_item = menu_dict["Lunch items"][item] #get the price of the item from the menu dictionary 
+            ordered_item_price.append(price_item) #add the price of the item to the price list
+        x += 1
+    
+    ordered_messagebox()
+
+#the snack menu function, allowing the user to order off the snacks menu
+def snack_menu():
+    x = 2
+    menu_frame.pack_forget()
+    global snack_frame
+    snack_frame = Frame(root, bg = "light blue")
+    snack_frame.grid()
+
+    back_button = Button(snack_frame, text = "back", command = snack_back)
+    back_button.grid(row = 0, column = 0, pady = 10, padx = 10)
+
+    snack_label = Label(snack_frame, text = "Snack Items", font = ("Arial Bold", 20), bg = "light blue")
+    snack_label.grid(row = 0, column = 1)
+
+    #gets the index value of the lunch category from the menu
+    items = list(menu_dict.values())[1] #finds the dictionary of lunch items from the lunch categories index number
+    item_name = Label(snack_frame, text = "Item", font = ("Arial Bold", 10), bg = "light blue")
+    item_name.grid(row = 1, column = 0, padx = 10, pady = 10)
+
+    price_name = Label(snack_frame, text = "Price", font = ("Arial Bold", 10), bg = "light blue")
+    price_name.grid(row = 1, column = 1, padx = 10, pady = 10)
+
+    quantity_name = Label(snack_frame, text = "Quantity", font = ("Arial Bold", 10), bg = "light blue")
+    quantity_name.grid(row = 1, column = 2, padx = 10, pady = 10)
+
+    for object, price in items.items(): #prints the lunch items and prices from the lunch item dictionary
+        item_label = Label(snack_frame, text = object, font = ("Arial Bold", 10), bg = "light blue")
+        item_label.grid(row = x, column = 0, padx = 10, pady = 10)
+
+        price_label = Label(snack_frame, text = f"${price}", font = ("Arial Bold", 10), bg = "light blue")
+        price_label.grid(row = x, column = 1, padx = 10, pady = 10)
+
+        quantity_box = Spinbox(snack_frame, from_ = 0, to = 10, width = 5, state = "readonly")
+        quantity_box.grid(row = x, column = 2, padx = 10, pady = 10)
+        x += 1
+
+    submit_button = Button(snack_frame, text = "submit", bg = "light green", command = order_snacks)
+    submit_button.grid(row = x, column = 0)
+
+#retrieving the quantity of items the user ordered off of the snacks menu
+def order_snacks():
+    snack_items = list(menu_dict["Snack items"].keys())
+    
+    x = 0
+    for i in range(len(snack_items)):
+        quantity = int(snack_frame.grid_slaves(row = 2 + x, column = 2)[0].get()) #for all the widgets in column 2 of the snack frame, get the value
+        if quantity > 0: 
+            item = snack_items[i] #find the item in from the snacks dictionary
+            users_order[item] = quantity #add the item and quantity to the users order
+            price_item = menu_dict["Snack items"][item] #find the price of the item
+            ordered_item_price.append(price_item) 
+        x += 1
+
+    ordered_messagebox()
+
+#displaying the items in the drinks menu and allowing the user to order from it
+def drinks_menu():
+    x = 2
+    menu_frame.pack_forget()
+    global drinks_frame
+    drinks_frame = Frame(root, bg = "light blue")
+    drinks_frame.grid()
+
+    back_button = Button(drinks_frame, text = "back", command = drinks_back)
+    back_button.grid(row = 0, column = 0, pady = 10, padx = 10)
+
+    snack_label = Label(drinks_frame, text = "Drink Items", font = ("Arial Bold", 20), bg = "light blue")
+    snack_label.grid(row = 0, column = 1)
+
+    #gets the index value of the lunch category from the menu
+    items = list(menu_dict.values())[2] #finds the dictionary of lunch items from the lunch categories index number
+    item_name = Label(drinks_frame, text = "Item", font = ("Arial Bold", 10), bg = "light blue")
+    item_name.grid(row = 1, column = 0, padx = 10, pady = 10)
+
+    price_name = Label(drinks_frame, text = "Price", font = ("Arial Bold", 10), bg = "light blue")
+    price_name.grid(row = 1, column = 1, padx = 10, pady = 10)
+
+    quantity_name = Label(drinks_frame, text = "Quantity", font = ("Arial Bold", 10), bg = "light blue")
+    quantity_name.grid(row = 1, column = 2, padx = 10, pady = 10)
+    
+    for object, price in items.items(): #prints the lunch items and prices from the lunch item dictionary
+        item_label = Label(drinks_frame, text = object, font = ("Arial Bold", 10), bg = "light blue")
+        item_label.grid(row = x, column = 0, padx = 10, pady = 10)
+
+        price_label = Label(drinks_frame, text = f"${price}", font = ("Arial Bold", 10), bg = "light blue")
+        price_label.grid(row = x, column = 1, padx = 10, pady = 10)
+
+        quantity_box = Spinbox(drinks_frame, from_ = 0, to = 10, width = 5, state = "readonly")
+        quantity_box.grid(row = x, column = 2, padx = 10, pady = 10)
+        x += 1
+
+    submit_button = Button(drinks_frame, text = "submit", bg = "light green", command = order_drinks)
+    submit_button.grid(row = x, column = 0)
+
+#retrieving the quantity of items the user ordered off of the drinks menu
+def order_drinks():
+    drink_items = list(menu_dict["Drink items"].keys())
+        
+    x = 0
+    for i in range(len(drink_items)): 
+        quantity = int(drinks_frame.grid_slaves(row = 2 + x, column = 2)[0].get()) #for all the items in column 2 of the drinks frame, retrieve the variable
+        if quantity > 0:
+            item = drink_items[i] #find the item from the drinks menu
+            users_order[item] = quantity #add the item and the quantity to the users order
+            price_item = menu_dict["Drink items"][item] #find the price of the item
+            ordered_item_price.append(price_item) #add the price of the item to the price list
+        x += 1
+    ordered_messagebox()
+    
+#the checkout function to display the items in the users order and display the total price
+def checkout():
+    x = 2
+    z = 0
+    global total_price
+    total_price = 0
+    menu_frame.pack_forget()
+    global checkout_frame
+    checkout_frame = Frame(root, bg = "light blue")
+    checkout_frame.grid()
+
+    back_button = Button(checkout_frame, text = "back", command = menu_back)
+    back_button.grid(row = 0, column = 0)
+
+    checkout_label = Label(checkout_frame, text = "Checkout", font = ("Arial Bold", 20), bg = "light blue", justify = "center")
+    checkout_label.grid(row = 0, column = 1, padx = 10, pady = 20)
+
+    item_name = Label(checkout_frame, text = "Item", font = ("Arial Bold", 10), bg = "light blue")
+    item_name.grid(row = 1, column = 0, padx = 10, pady = 10)
+
+    price_name = Label(checkout_frame, text = "Price", font = ("Arial Bold", 10), bg = "light blue")
+    price_name.grid(row = 1, column = 2, padx = 10, pady = 10)
+
+    quantity_name = Label(checkout_frame, text = "Quantity", font = ("Arial Bold", 10), bg = "light blue")
+    quantity_name.grid(row = 1, column = 1, padx = 10, pady = 10)
+
+    for item, quantity in users_order.items():
+        item_label = Label(checkout_frame, text = item, font = ("Arial Bold", 10), bg = "light blue")
+        item_label.grid(row = x, column = 0, padx = 10, pady = 5)
+
+        quantity_label = Label(checkout_frame, text = quantity, font = ("Arial Bold", 10), bg = "light blue")
+        quantity_label.grid(row = x, column = 1, padx = 10, pady = 5)
+
+        price = (f"${(ordered_item_price[z])} each")
+
+        price_label = Label(checkout_frame, text = price, font = ("Arial Bold", 10), bg = "light blue")
+        price_label.grid(row = x, column = 2, padx = 10, pady = 10)
+
+        total_price += (quantity * (ordered_item_price[z]))
+
+        x += 1
+        z += 1
+    
+    total_label = Label(checkout_frame, text = f"Total price: ${total_price}", font = ("Arial Bold", 10), bg = "light blue")
+    total_label.grid(row = x, column = 2)
+
+    purchase_order = Button(checkout_frame, text = "Purchase order", bg = "light green", command = purchase_msg)
+    purchase_order.grid(row = x + 1, column = 2, pady = 20)
+
+#this group of functions corresponds to the back buttons from the lunch menu, snack and drinks menu to allow the user to go back and select a new item category. 
+def menu_back():
+    checkout_frame.grid_remove()
+    menu()
+
+def lunch_back():
+    lunch_frame.grid_remove()
+    menu()
+
+def snack_back():
+    snack_frame.grid_remove()
+    menu()
+    
+def drinks_back():
+    drinks_frame.grid_remove()
+    menu()
+
+#this function prints a message if the user clicks the purchase order button depending on how many items are in the cart
+def purchase_msg():
+    if total_price == 0:
+        messagebox.showinfo("Error", "There is no items in your cart. ")
+    
+    else:
+        messagebox.showinfo("Success!", "Your order has been purchased!")
+        exit()
+
+#main routine - running the starting screen
+start_screen()
+
+#closing the main loop 
+root.mainloop()
