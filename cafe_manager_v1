@@ -1,0 +1,205 @@
+#cafe_manager_v1.py
+#version1: basic cafe manager
+#this program is a cafe manager for user's to make accounts, take orders and display an invoice
+#r.tanner 26/04/2023
+
+#declaring the constants/variables
+MIN_USER_AGE = 13 #the minimum age the user can be 
+MAX_USER_AGE = 18 #the maximum age the user can be
+LOG_IN_ATTEMPTS = 3 #user's have 3 attempts to log in or they will be locked out
+
+#creating a dictionary for the user's accounts
+accounts_dict = {"r" :"t", "rosetta": "tanner"}
+
+#the current cafe menu
+menu_items = {"udon" : 6, "berry smoothie": 4.5, "sausage roll": 4.5, "mince pie": 3.5, "sushi": 5, "loaded fries": 2, "chicken sandwich": 4}
+
+#the items the user selects for their order
+users_order = {}
+
+#creating a space function in order to create whitespace and increase the aeshetic of the code
+def space():
+    print(" ")
+
+#creating a log in function, so user's can log in to make the program extra secure
+def log_in():
+    LOG_IN_ATTEMPTS = 3 #the user has three attempts to log in with their correct details.
+    while LOG_IN_ATTEMPTS >= 1:
+        username = input("Enter your username : ")
+        if username in accounts_dict:
+            check_username = accounts_dict.get(username) #making the user's username equivalent to the correct username in the dictionary. 
+
+        else:
+            check_username = None #if the user's username is not found in the dictionary
+        password = input("Enter your password: ")
+
+        if check_username == password:
+            print("Access Granted.") #if the user enters the correct username and password
+            space()
+            break
+
+        else: #if the user's details are incorrect, they will have one less try.
+            LOG_IN_ATTEMPTS -= 1
+            print("Incorrect details. Please try again.")
+            print(f"Attempts remaining: {LOG_IN_ATTEMPTS}")
+            space()
+            if LOG_IN_ATTEMPTS == 0:
+                exit()
+
+#a new account function for users to create a new account
+def new_account():
+    username = input("Enter your new username : ")
+    password = input("Enter your new password : ")
+    accounts_dict[username] = password #adding the user's username and password to the accounts dictionary
+    print("Success. New account made. ")
+    space()
+
+
+#a function to ask the user their name and see if they are old enough to sign up 
+def age_check():    
+    while True:
+        try:
+            age = int(input("Enter your age: "))
+
+            if age > 0 and age <= 120:
+                next
+                if age >= MIN_USER_AGE and age <= MAX_USER_AGE: #if the user enter's an age that is valid. 
+                    break
+
+                else: #if the user enters an invalid age, they cannot use the program. 
+                    print(f"Your are not in the age range to be eligible for this program. User's must be between {MIN_USER_AGE} and {MAX_USER_AGE}.")
+                    space()
+                    quit()
+                
+            else:
+                print("This is not a valid age. Please enter a valid answer. ")
+
+        except ValueError: #if the user does not enter a valid integer. 
+            print("Invalid answer. Please enter a valid integer. ")
+            space()
+
+#function to add the user's item and quantity to the user's order dictionary
+def add_item(order, quantity):
+    users_order[order] = quantity
+
+#main menu function
+def menu():
+    print("Here is today's cafe menu: ")
+    for item in menu_items: #for every item in the menu items dictionary, print the product and the price
+        product = list(menu_items).index(item)
+        price = list(menu_items.values())[product]
+        print(f"- {item}, ${price}")
+
+    while True:
+        space()
+        order = input("What would you like to order today? ")
+
+        if order in menu_items: #if the user enters a valid item
+            while True:
+                try:
+                    quantity = int(input(f"How many {order}'s would you like? "))
+                    if quantity > 0:
+                        break
+                    
+                    else:
+                        print("Please enter a valid integer greater than 0. ")
+
+                except ValueError:
+                    print("Please enter a valid integer. ")
+
+            add_item(order, quantity) #adding the item and quantity to the users_item dictionary
+            break
+        
+        else: #if the user enters an invalid item
+            print("This is not an available item. Please try again")
+            space()
+
+    while True: #asking the user if they would like to order anything else
+        space()
+        order_more = input("Would you like to order anything else today? (y/n) ")
+        if order_more == "y": #if the user wants to order more
+            while True: 
+                additional_items = input("What else would you like to order today? ")   
+
+                if additional_items in menu_items: #if the user enters a valid item
+                    while True:
+                        try:
+                            additional_quantity = int(input(f"How many {additional_items}'s would you like? "))
+                            if additional_quantity > 0: 
+                                break
+                            
+                            else:
+                                print("Please enter an integer greater than 0. ")
+                        
+                        except ValueError:
+                            print("Please enter a valid integer")
+                            
+                    add_item(additional_items, additional_quantity) #adding the item and quantity to the users_order dictionary
+                    break
+            
+                else: #if the user enters an invalid item
+                    print("This is not an available item. Please try again")
+                    space()
+
+        elif order_more == "n": #if the user does not want to order anything else run the order summary function
+            order_summary()
+            break    
+
+        else: #if the user does not enter a valid answer
+            print("Please enter either 'y' or 'n'")
+
+
+#need to print the quantity of items as well
+def order_summary():
+    space()
+    order_total = 0
+    print("Here is your order summary: ")
+    for option in users_order: #for each item in the user's order...
+        food = list(menu_items).index(option) #gets the index value of the food item from the menu
+        price = list(menu_items.values())[food] #finds the price of the food item, using the index value
+        food1 = list(users_order).index(option) #finds the index value of the food item from the user's order
+        quantity = list(users_order.values())[food1] #finds the quantity of the food item required, using the index va;ue
+        print(f"- {option}: ${price}, quantity: {quantity}")
+        order_total += (price * quantity)
+    print(f"The price of your order comes to ${order_total}. ")
+
+
+#introducing the user to the program
+print("Welcome to the Cafe Manager. \nHere you will be able to create an account or log into an existing one, place your cafe order and recieve an invoice to your order. ")
+
+    
+#main routine
+while True:
+    try:
+        #asking the user which function they would like to run
+        print("1. Login \n2. Create new account\n3. Exit")
+        choice = int(input("Enter your choice: "))
+        if choice == 1 or choice == 2 or choice == 3:
+            break
+
+        #if the user does not enter a valid menu option.
+        else:
+            print("Please enter a valid input of 1, 2, or 3. ")
+            space()
+    
+    #if the user does not enter an integer. 
+    except ValueError:
+        print("Invalid answer. Please enter a valid integer.")
+        space()
+
+#if the user chooses the log in function
+if choice == 1:
+    log_in()
+    menu()
+
+#if the user chooses to create a new account
+elif choice == 2:
+    age_check()
+    new_account()
+    menu()
+
+#if the user wants to exit the cafe manager program
+elif choice == 3:
+    print("Thank you for using Cafe manager! Come back soon.")
+    exit
+
