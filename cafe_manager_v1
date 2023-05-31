@@ -164,6 +164,7 @@ def order_summary():
     print(f"The price of your order comes to ${order_total}. ")
 
 
+
 #introducing the user to the program
 print("Welcome to the Cafe Manager. \nHere you will be able to create an account or log into an existing one, place your cafe order and recieve an invoice to your order. ")
 
