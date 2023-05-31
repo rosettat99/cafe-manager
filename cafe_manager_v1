@@ -54,7 +54,6 @@ def new_account():
     print("Success. New account made. ")
     space()
 
-
 #a function to ask the user their name and see if they are old enough to sign up 
 def age_check():    
     while True:
@@ -203,4 +202,5 @@ elif choice == 2:
 elif choice == 3:
     print("Thank you for using Cafe manager! Come back soon.")
     exit
+
 
