@@ -483,7 +483,7 @@ def purchase_msg():
         messagebox.showinfo("Error", "There is no items in your cart. ")
     
     else:
-        messagebox.showinfo("Success!", "Your order has been purchased!")
+        messagebox.showinfo("Success!", "Your order has been placed !")
         exit()
 
 #main routine - running the starting screen
