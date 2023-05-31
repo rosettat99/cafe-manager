@@ -53,9 +53,10 @@ users_order = {}
 #a list to store the price of the items the user orders
 ordered_item_price = []
 
-MIN_USER_AGE = 13
-MAX_USER_AGE = 18
+MIN_USER_AGE = 13 #the minimum age the user can be 
+MAX_USER_AGE = 18 #the maximum age the user can be
 
+#creating the main frame, allowing user's to access the cafe manager
 def start_screen():
     global frame0
     frame0 = Frame(root, bg = "light blue")
@@ -73,7 +74,7 @@ def start_screen():
     exit_label = Button(frame0, text = "EXIT", width = 20, height = 2, font = ("Arial", 15), bg = "red", command = exit)
     exit_label.grid(row = 3, column = 1, padx = 10, pady = 5)
 
-#creating frame 2, where user's can log in to the password manager
+#creating frame 2, where user's can log in to the cafe manager
 def log_in():
     global log_in_frame #making it global so I can access it from other functions
     frame0.pack_forget()
@@ -437,22 +438,22 @@ def checkout():
     quantity_name = Label(checkout_frame, text = "Quantity", font = ("Arial Bold", 10), bg = "light blue")
     quantity_name.grid(row = 1, column = 1, padx = 10, pady = 10)
 
-    for item, quantity in users_order.items():
+    for item, quantity in users_order.items(): #for each key, value in the users order
         item_label = Label(checkout_frame, text = item, font = ("Arial Bold", 10), bg = "light blue")
         item_label.grid(row = x, column = 0, padx = 10, pady = 5)
 
         quantity_label = Label(checkout_frame, text = quantity, font = ("Arial Bold", 10), bg = "light blue")
         quantity_label.grid(row = x, column = 1, padx = 10, pady = 5)
 
-        price = (f"${(ordered_item_price[z])} each")
+        price = (f"${(ordered_item_price[z])} each") #find the price of the item, from the price list's index number (starting from 0)
 
         price_label = Label(checkout_frame, text = price, font = ("Arial Bold", 10), bg = "light blue")
         price_label.grid(row = x, column = 2, padx = 10, pady = 10)
 
         total_price += (quantity * (ordered_item_price[z]))
 
-        x += 1
-        z += 1
+        x += 1 #the row increases by 1, after every item
+        z += 1 #this increases by 1, to find the price of the next item in the index
     
     total_label = Label(checkout_frame, text = f"Total price: ${total_price}", font = ("Arial Bold", 10), bg = "light blue")
     total_label.grid(row = x, column = 2)
