@@ -1,0 +1,4 @@
+item: Instant Noodles  /  price: $4.0 each  / quantity: 1
+item: Coke  /  price: $3.0 each  / quantity: 1
+
+Order total: $7.0
