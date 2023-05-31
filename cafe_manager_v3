@@ -52,7 +52,7 @@ users_order = {}
 #a list to store the price of the items the user orders
 ordered_item_price = []
 
-#creating the main frame, allowing user's to access the password manager
+#creating the main frame, allowing user's to access the cafe manager
 def start_screen():
     global frame0 #making it global so I can access the function in other functions
     frame0 = Frame(root)
@@ -408,7 +408,7 @@ def checkout():
     quantity_name = Label(checkout_frame, text = "Quantity", font = ("Arial Bold", 10))
     quantity_name.grid(row = 1, column = 1, padx = 10, pady = 10)
 
-    for item, quantity in users_order.items(): #for each key, value in the users ordr
+    for item, quantity in users_order.items(): #for each key, value in the users order
         item_label = Label(checkout_frame, text = item, font = ("Arial Bold", 10))
         item_label.grid(row = x, column = 0, padx = 10, pady = 5)
 
@@ -422,8 +422,8 @@ def checkout():
 
         total_price += (quantity * (ordered_item_price[z]))
 
-        x += 1
-        z += 1
+        x += 1 #the row increases by 1, after every item
+        z += 1 #this increases by 1, to find the price of the next item in the index
     
     total_label = Label(checkout_frame, text = f"Total price: ${total_price}", font = ("Arial Bold", 10))
     total_label.grid(row = x, column = 2)
