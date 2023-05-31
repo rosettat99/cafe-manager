@@ -1,7 +1,7 @@
-#cafe_manager_v4.py
-#version 4: GUI based cafe manager
+#cafe_manager_v5.py
+#version 5: GUI based cafe manager
 #this program is a cafe manager for user's to make accounts, take orders and display an invoice
-#r.tanner 9/05/2023
+#r.tanner 25/05/2023
 
 import tkinter as tk
 from tkinter import* #importing tkinter to create the GUI
@@ -493,7 +493,7 @@ def purchase_msg():
     else:
         messagebox.showinfo("Success!", "Your order has been purchased!")
         with open ("sales_details.txt", "a+") as output:
-            output.write("".join(f"\nOrder total: ${total_price}"))
+            output.write("".join(f"\nOrder total: ${total_price}" + "\n"))
         exit()
 
 #main routine - running the starting screen
