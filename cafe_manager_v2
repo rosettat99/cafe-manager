@@ -299,7 +299,3 @@ if choice == 2:
 if choice == 3:
     print("Thank you for using Cafe manager! Come back soon.")
     exit
-
-
-
-
