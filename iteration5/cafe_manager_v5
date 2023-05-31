@@ -5,9 +5,8 @@
 
 import tkinter as tk
 from tkinter import* #importing tkinter to create the GUI
-from tkinter.ttk import Combobox #importing the combobox, a specific widget used in this program
 from tkinter import messagebox #importing the messagebox, a specific widget used in this program
-from PIL import ImageTk, Image
+from PIL import ImageTk, Image #importing ImageTk, a specific widget used in this program to create a photo. 
 
 root = tk.Tk()
 root.geometry("500x500") 
@@ -66,16 +65,16 @@ def start_screen():
     cafe_label = Label(frame0, text = "Cafe Manager", font = ("Arial Bold", 20), bg = "light blue", justify = "center")
     cafe_label.grid(row = 0, column = 1, padx = 10, pady = 20)
 
-    log_in_label = Button(frame0, text = "Log in", width = 20, height = 2, font = ("Arial", 15), bg = "light green", command = log_in)
-    log_in_label.grid(row = 1, column = 1, padx = 10, pady = 5)
+    log_in_button = Button(frame0, text = "Log in", width = 20, height = 2, font = ("Arial", 15), bg = "light green", command = log_in)
+    log_in_button.grid(row = 1, column = 1, padx = 10, pady = 5)
 
-    create_account_label = Button(frame0, text = "Create new account", width = 20, height = 2, font = ("Arial", 15), bg = "light green", command = ask_age)
-    create_account_label.grid(row = 2, column = 1, padx = 10, pady = 5)
+    create_account_button = Button(frame0, text = "Create new account", width = 20, height = 2, font = ("Arial", 15), bg = "light green", command = ask_age)
+    create_account_button.grid(row = 2, column = 1, padx = 10, pady = 5)
 
     exit_label = Button(frame0, text = "EXIT", width = 20, height = 2, font = ("Arial", 15), bg = "red", command = exit)
     exit_label.grid(row = 3, column = 1, padx = 10, pady = 5)
 
-#creating frame 2, where user's can log in to the password manager
+#creating frame 2, where user's can log in to the cafe manager
 def log_in():
     global log_in_frame #making it global so I can access it from other functions
     frame0.pack_forget()
@@ -216,11 +215,11 @@ def place_order():
     option_label = Label(place_order_frame, text = "Please choose an option: ", font = ("Arial Bold", 15), justify = "center", bg = "light blue")
     option_label.grid(row = 1, column = 1, padx = 10, pady = 10)
 
-    lunch_label = Button(place_order_frame, text = "Place an Order", width = 25, height = 3, font = ("Arial", 11), bg = "light green", command = menu)
-    lunch_label.grid(row = 2, column = 1, padx = 10, pady = 5)
+    order_button = Button(place_order_frame, text = "Place an Order", width = 25, height = 3, font = ("Arial", 11), bg = "light green", command = menu)
+    order_button.grid(row = 2, column = 1, padx = 10, pady = 5)
 
-    snack_label = Button(place_order_frame, text = "EXIT", width = 25, height = 3, font = ("Arial", 11), bg = "red", command = exit)
-    snack_label.grid(row = 3, column = 1, padx = 10, pady = 5)
+    exit_button = Button(place_order_frame, text = "EXIT", width = 25, height = 3, font = ("Arial", 11), bg = "red", command = exit)
+    exit_button.grid(row = 3, column = 1, padx = 10, pady = 5)
 
 #this is the main menu function which displays the categories the user can choose from, as well as the checkout
 def menu():
@@ -442,25 +441,27 @@ def checkout():
     quantity_name = Label(checkout_frame, text = "Quantity", font = ("Arial Bold", 10), bg = "light blue")
     quantity_name.grid(row = 1, column = 1, padx = 10, pady = 10)
 
-    for item, quantity in users_order.items():
+    for item, quantity in users_order.items(): #for each key, value in the users order
         item_label = Label(checkout_frame, text = item, font = ("Arial Bold", 10), bg = "light blue")
         item_label.grid(row = x, column = 0, padx = 10, pady = 5)
 
         quantity_label = Label(checkout_frame, text = quantity, font = ("Arial Bold", 10), bg = "light blue")
         quantity_label.grid(row = x, column = 1, padx = 10, pady = 5)
 
-        price = (f"${(ordered_item_price[z])} each")
+        price = (f"${(ordered_item_price[z])} each") #find the price of the item, from the price list's index number (starting from 0)
 
         price_label = Label(checkout_frame, text = price, font = ("Arial Bold", 10), bg = "light blue")
         price_label.grid(row = x, column = 2, padx = 10, pady = 10)
 
         total_price += (quantity * (ordered_item_price[z]))
 
+        #storing the users order details in an external txt file
         with open ("sales_details.txt", "a+") as output:
+            #include the item, price of the item, and quantity of the item the user requires. 
             output.write("".join(f"item: {item}  /  price: {price}  / quantity: {quantity}") + "\n")
 
-        x += 1
-        z += 1
+        x += 1 #the row increases by 1, after every item
+        z += 1 #this increases by 1, to find the price of the next item in the index
     
     total_label = Label(checkout_frame, text = f"Total price: ${total_price}", font = ("Arial Bold", 10), bg = "light blue")
     total_label.grid(row = x, column = 2)
@@ -492,6 +493,8 @@ def purchase_msg():
     
     else:
         messagebox.showinfo("Success!", "Your order has been purchased!")
+        
+        #adding the total order price to the external txt file
         with open ("sales_details.txt", "a+") as output:
             output.write("".join(f"\nOrder total: ${total_price}" + "\n"))
         exit()
