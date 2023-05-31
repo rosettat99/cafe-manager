@@ -96,7 +96,7 @@ def log_in():
     username_title = Label(log_in_frame, text = "Enter your username: ", font = ("Arial Bold", 10))
     username_title.grid(row = 1, column = 0, pady = 10)
 
-    global username
+    global username 
     username = Entry(log_in_frame)
     username.grid(row = 1, column = 1, pady = 10)
 
@@ -188,7 +188,7 @@ def place_order():
 def check_order():
     check_option = pw_combo.get() #retrieving the value the user entered in the combobox
     if check_option == "1. Place an order":
-        menu() #run add account function
+        menu() #run menu function
     
     elif check_option == "2. Exit":     
         root.destroy() #destroy the root and exit the program
